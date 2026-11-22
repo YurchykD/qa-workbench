@@ -2,7 +2,7 @@
 
 A small browser tool for practicing test design. Enter a requirement, get decision tables, pairwise sets, state diagrams, equivalence classes, boundary values and a REST API checklist. Export any result to Google Sheets, Excel or Markdown.
 
-**Live demo:** https://YOUR-USERNAME.github.io/REPO-NAME/
+**Live demo:** https://yurchykd.github.io/qa-workbench
 
 ![QA Workbench screenshot](docs/screenshot.png)
 
