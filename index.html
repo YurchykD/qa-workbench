@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QA Workbench</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f6b63'/%3E%3Cpath d='M16 34l12 12 22-26' fill='none' stroke='%23fff' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#eef2f0;--grid:#dde5e1;--sf:#fff;--ink:#16232b;--mut:#5b6b72;--ln:#c9d4cf;--ac:#0f6b63;--acx:#fff;--ok:#1d7a46;--okb:#e3f3e9;--bad:#b4372d;--badb:#fbe7e4}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0f1a1d;--grid:#17262a;--sf:#162328;--ink:#e6efec;--mut:#93a6a8;--ln:#2b4046;--ac:#5fc4b8;--acx:#0f1a1d;--ok:#7bd9a0;--okb:#173326;--bad:#ff9a8d;--badb:#3a1f1c}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);background:var(--bg);color:var(--ink);font:400 16px/1.55 Manrope,system-ui,sans-serif;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 18px 60px}
+header{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-bottom:18px}
+h1{font-weight:800;font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 8px;letter-spacing:-.02em}
+.sub{color:var(--mut);max-width:60ch;margin:0}
+.ctl{display:flex;gap:8px}
+.ctl button,.seg button{font:600 13px Manrope,sans-serif;padding:7px 12px;border:1.5px solid var(--ln);background:var(--sf);color:var(--ink);cursor:pointer;border-radius:6px}
+.seg{display:flex}.seg button:first-child{border-radius:6px 0 0 6px}.seg button:last-child{border-radius:0 6px 6px 0;border-left:0}
+.seg button[aria-pressed=true]{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+nav button{font:600 14px Manrope,sans-serif;padding:9px 14px;border:1.5px solid var(--ln);background:var(--sf);color:var(--ink);border-radius:999px;cursor:pointer}
+nav button[aria-selected=true]{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+button:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+section{display:none;background:var(--sf);border:1.5px solid var(--ln);border-radius:10px;padding:20px}
+section.on{display:block}
+section h2{margin:0 0 10px;font-size:22px}
+details{border:1.5px solid var(--ln);border-radius:8px;padding:8px 14px;margin-bottom:16px;background:var(--bg)}
+summary{cursor:pointer;font-weight:600}
+details ol{margin:8px 0 4px;padding-left:20px;max-width:80ch}details li{margin-bottom:4px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:20px}
+@media(max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
+.cols>div{min-width:0}
+.er input{min-width:0;flex:1}
+.er .x{flex:0 0 36px;padding:0}
+.meta,.note{overflow-wrap:anywhere}
+.chk input:disabled+span{opacity:.5}
+code{background:var(--sf);border:1px solid var(--ln);padding:0 5px;border-radius:4px;font-size:.92em}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px;color:var(--mut)}
+.chip{padding:4px 12px;border-radius:999px;font-weight:600;font-size:14px}
+#api .cols{grid-template-columns:minmax(0,1fr)}
+#api .cols>div:first-child{display:flex;flex-wrap:wrap;gap:4px 28px;align-items:center}
+#api .cols>div:first-child>.row{flex:1 1 100%;margin-bottom:6px}
+#api .cols>div:first-child>.row>div:last-child{flex:1 1 320px}
+#api .chk{margin:0}
+select{appearance:none;-webkit-appearance:none;padding-right:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23778' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:12px 8px}
+label,.lb{display:block;font-weight:600;font-size:14px;margin:0 0 4px}
+textarea,input,select{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--ln);border-radius:6px;background:var(--bg);color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.row>div{flex:1;min-width:110px}
+.chk{display:flex;gap:8px;align-items:center;font-weight:400;margin-bottom:8px}.chk input{width:auto}
+.ed{margin-bottom:14px}.er{display:flex;gap:6px;margin-bottom:6px}
+.er .x,.add{width:auto;font:600 14px Manrope,sans-serif;border:1.5px solid var(--ln);background:var(--sf);color:var(--ink);border-radius:6px;cursor:pointer;padding:0 10px}
+.add{padding:6px 12px;border-style:dashed;color:var(--ac)}
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;font-size:14px;min-width:100%}
+th,td{border:1px solid var(--ln);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg);font-weight:600}
+.nw th,.nw td{white-space:nowrap}
+td.c{text-align:center}.t{color:var(--ok)}.f{color:var(--bad)}
+.v{background:var(--okb);color:var(--ok);font-weight:600}.i{background:var(--badb);color:var(--bad);font-weight:600}
+.tog{cursor:pointer;text-align:center;min-width:44px;user-select:none}.tog:hover{background:var(--bg)}
+.meta{font-weight:600;margin:0 0 10px}.note{color:var(--mut);font-size:14px;margin:0 0 10px}
+.ex{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ex button{font:600 14px Manrope,sans-serif;padding:8px 12px;border:1.5px solid var(--ac);background:transparent;color:var(--ac);border-radius:6px;cursor:pointer}
+.ex button:hover{background:var(--ac);color:var(--acx)}
+svg{width:100%;height:auto;max-height:440px;color:var(--ink);margin-bottom:12px}
+svg .n{fill:var(--sf);stroke:var(--ac);stroke-width:2}svg .n.s{stroke-width:5}
+svg text{fill:var(--ink);font:600 12px Manrope,sans-serif;text-anchor:middle}
+svg .e{fill:none;stroke:var(--ink);stroke-width:1.5}svg .l{fill:var(--ac);font-size:11px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:6px;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.on{opacity:1}
+footer{margin-top:22px;color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div><h1 data-i="title"></h1><p class="sub" data-i="sub"></p></div>
+ <div class="ctl"><div class="seg"><button data-l="en">EN</button><button data-l="uk">УК</button></div><button id="th"></button></div>
+</header>
+<nav role="tablist" id="tabs"></nav>
+
+<section id="dt"><h2 data-i="t_dt"></h2>
+<details open><summary data-i="how"></summary><div data-h="how_dt"></div></details>
+<div class="cols"><div>
+<div class="lb" data-i="l_cond"></div><div class="ed" id="dtc"></div>
+<div class="lb" data-i="l_act"></div><div class="ed" id="dta"></div>
+</div><div><p class="meta" id="dt-m"></p><div class="scroll nw" id="dt-o"></div><div class="ex" data-for="dt-o"></div></div></div></section>
+
+<section id="pw"><h2 data-i="t_pw"></h2>
+<details open><summary data-i="how"></summary><div data-h="how_pw"></div></details>
+<div class="cols"><div><div class="lb" data-i="l_par"></div><div class="ed" id="pwe"></div></div>
+<div><p class="meta" id="pw-m"></p><div class="scroll nw" id="pw-o"></div><div class="ex" data-for="pw-o"></div></div></div></section>
+
+<section id="st"><h2 data-i="t_st"></h2>
+<details open><summary data-i="how"></summary><div data-h="how_st"></div></details>
+<div class="cols"><div><div class="lb" data-i="l_tr"></div><div class="ed" id="ste"></div></div>
+<div><p class="meta" id="st-m"></p><div id="st-g"></div><div class="scroll nw" id="st-o"></div><div class="ex" data-for="st-o"></div></div></div></section>
+
+<section id="ep"><h2 data-i="t_ep"></h2>
+<details open><summary data-i="how"></summary><div data-h="how_ep"></div></details>
+<div class="cols"><div>
+<label for="ep-n" data-i="l_field"></label><input id="ep-n" style="margin-bottom:12px">
+<div class="row"><div><label for="ep-min" data-i="l_min"></label><input id="ep-min" type="number" value="18"></div><div><label for="ep-max" data-i="l_max"></label><input id="ep-max" type="number" value="65"></div></div>
+<label class="chk"><input id="ep-int" type="checkbox" checked><span data-i="l_int"></span></label>
+</div><div><p class="meta" id="ep-m"></p><div class="scroll nw" id="ep-o"></div><div class="ex" data-for="ep-o"></div></div></div></section>
+
+<section id="bv"><h2 data-i="t_bv"></h2>
+<details open><summary data-i="how"></summary><div data-h="how_bv"></div></details>
+<div class="cols"><div>
+<div class="row"><div><label for="bv-min" data-i="l_min"></label><input id="bv-min" type="number" value="18"></div><div><label for="bv-max" data-i="l_max"></label><input id="bv-max" type="number" value="65"></div></div>
+<div class="row"><div><label for="bv-s" data-i="l_step"></label><input id="bv-s" type="number" value="1" step="any" min="0.000001"></div>
+<div><label for="bv-k" data-i="l_meth2"></label><select id="bv-k"><option value="2">2</option><option value="3">3</option></select></div></div>
+</div><div><p class="meta" id="bv-m"></p><div class="chips" id="bv-l"></div><div class="scroll nw" id="bv-o"></div><div class="ex" data-for="bv-o"></div></div></div></section>
+
+<section id="api"><h2 data-i="t_api"></h2>
+<details open><summary data-i="how"></summary><div data-h="how_api"></div></details>
+<div class="cols"><div>
+<div class="row"><div style="flex:0 0 110px"><label for="a-m" data-i="l_meth"></label><select id="a-m"><option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option></select></div>
+<div><label for="a-p" data-i="l_path"></label><input id="a-p" value="/users/{id}/orders?status=paid&limit=20" spellcheck="false"></div></div>
+<label class="chk"><input id="a-a" type="checkbox" checked><span data-i="l_auth"></span></label>
+<label class="chk"><input id="a-f" type="checkbox"><span data-i="l_f"></span></label>
+<label class="chk"><input id="a-g" type="checkbox"><span data-i="l_g"></span></label>
+<label class="chk"><input id="a-o" type="checkbox" checked><span data-i="l_own"></span></label>
+</div><div><p class="meta" id="api-m"></p><p class="note" data-i="api_note"></p><div class="scroll" id="api-o"></div><div class="ex" data-for="api-o"></div></div></div></section>
+
+<footer data-i="foot"></footer>
+</div>
+<div id="toast" role="status"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const L=(s,re=/\n/)=>s.split(re).map(x=>x.trim()).filter(Boolean);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>+(+v).toFixed(6);
+const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+let lang=store.get('qa-lang')==='uk'?'uk':'en';
+const T={en:{
+title:'QA Workbench',sub:'Five test design techniques and a REST API checklist. Enter requirements, get tables and test cases, export to Google Sheets or Excel.',how:'How to use',foot:'Everything runs in your browser. No data is sent anywhere.',
+t_dt:'Decision table',t_pw:'Pairwise',t_st:'State transitions',t_ep:'Equivalence partitioning',t_bv:'Boundary values',t_api:'API checks',
+l_cond:'Conditions (yes/no)',l_act:'Outcomes',l_par:'Parameters',l_tr:'Transitions',l_field:'Field name',l_min:'Minimum',l_max:'Maximum',l_int:'Integers only',l_step:'Step',l_meth2:'Values per boundary',l_meth:'Method',l_path:'Path (with query if any)',l_auth:'Requires authentication',l_f:'Has filters',l_g:'Has pagination',l_own:'Data belongs to a user (ownership check)',
+c_cond:'Condition, e.g. Has an adult',c_act:'Outcome, e.g. Discount applied',c_par:'Parameter',c_vals:'Values, comma separated',c_from:'From state',c_ev:'Event',c_to:'To state',add:'+ Add row',
+how_dt:'<ol><li>List the <b>conditions</b> that affect the result. Each is yes or no.</li><li>List the <b>outcomes</b> you check, e.g. “Discount applied”.</li><li>The table shows every combination (T = true, F = false). Each column is one test case.</li><li>Click a cell in an outcome row to set the expected result: ✔ happens, ✘ does not.</li></ol>',
+how_pw:'<ol><li>One row per parameter: its name and its values, separated by commas.</li><li>You get the smallest set of tests where every pair of values from different parameters appears at least once.</li><li>Compare the number with all combinations shown above the table.</li></ol>',
+how_st:'<ol><li>Each row is one transition: the <b>state</b> you start in, the <b>event</b>, and the <b>state</b> you end in. Example: Draft, submit, Submitted.</li><li>The first row’s starting state is the initial state (thick ring).</li><li>The diagram updates itself. In the table ✘ means the event is not allowed in that state: write a negative test for it.</li></ol>',
+how_ep:'<ol><li>Enter the field name and its allowed range.</li><li>You get classes: one valid and several invalid. Values inside one class should behave the same way.</li><li>Test <b>one value per class</b> instead of hundreds. Then take the edges of the valid class to the Boundary values tab.</li></ol>',
+how_bv:'<ol><li>Enter the allowed minimum and maximum, and the step (1 for integers, 0.01 for money).</li><li>Choose 2 or 3 values per boundary.</li><li>Test each value and compare the result with “Expected”.</li></ol><p><b>Why the edges?</b> Range checks are often off by one character. Rule: “age 18 to 65”. If the code says <code>age &gt; 18</code> instead of <code>age &gt;= 18</code>, then 17 and 30 behave correctly, and only exactly 18 exposes the bug: it is wrongly rejected.</p>',
+how_api:'<ol><li>Choose the method and enter the path, e.g. <b>/users/{id}/orders?status=paid</b>.</li><li>Tick what applies: authentication, filters or pagination, user-owned data.</li><li>You get a checklist of statuses, headers, body, negative and security checks.</li></ol>',
+api_note:'This is a reference checklist. Your API documentation or contract is the source of truth: adjust codes and rules to it.',
+T:'T',F:'F',ex_s:'Copy for Google Sheets',ex_x:'Download .xlsx',ex_m:'Copy Markdown',ok:'Copied',fail:'Copy failed',
+e_dt:'Add at least one condition',e_pw:'Add at least two parameters with values',e_st:'Add at least one transition',e_r:'Minimum must not exceed maximum',e_bv:'Check minimum, maximum and step',
+dt_m:(n,N)=>`${n} conditions → 2ⁿ = ${N} rules`,pw_m:(k,f)=>`${k} tests instead of ${f} (all combinations)`,st_m:(s,e,n)=>`${s} states · ${e} transitions · ${n} negative tests (✘)`,ep_m:(n,k)=>`Field “${n}”: ${k} classes, one test per class`,bv_m:k=>`${k} test values`,api_m:(n,r)=>`${n} checks for ${r}`,
+st_h:'State \\ Event',cl:'Class',cd:'Condition',exm:'Example',exp:'Expected',val:'Valid',inv:'Invalid',pos:'Position',vl:'Value',acc:'accepted',rej:'rejected',
+ep1:'empty',ep2:'not a number',ep3:'decimal number',x1:'accepted',x2:'validation error',x3:'required field error',x4:'format error',x5:'error, not 500',x6:'error or documented rounding',emp:'(empty)',
+p1:'min − step',p2:'min',p3:'min + step',p4:'max − step',p5:'max',p6:'max + step',
+a_g:'Group',a_c:'Check',a_e:'Expected (reference)',a_h:'How to test',why:'What it checks',bug:'Bug it catches',ep4:'only spaces',ep5:'huge number',ep6:'special characters, injection',w1:'Normal case: a typical allowed value works.',w2:'Everything below the range is rejected, not silently accepted.',w3:'Everything above the range is rejected.',w4:'Missing input is handled and not treated as 0.',w5:'Wrong type does not crash the server (400, not 500).',w6:'null from the client is handled like missing or invalid input.',w7:'An integer-only field must not silently cut 42.5 to 42.',w8:'Spaces are not a value: they are trimmed and treated as empty.',w9:'Overflow: very large numbers do not wrap around or crash.',w10:'Text, emoji and injection strings are rejected safely: no 500, no stack trace.',b1:'Range too wide: a value below the minimum gets through',b2:'Wrong operator at the lower edge: “>” instead of “>=”',b3:'Sanity check: the first value inside the range works',b4:'Sanity check: the last value inside the range works',b5:'Wrong operator at the upper edge: “<” instead of “<=”',b6:'Range too wide: a value above the maximum is accepted',a_d:'Done',
+g_st:'Status',g_hd:'Headers',g_bd:'Body and validation',g_ng:'Negative',g_au:'Auth and security',g_ac:'After the call',g_pg:'Filters and pagination',g_id:'Idempotency'},
+uk:{
+title:'QA-майстерня',sub:'П’ять технік тест-дизайну й чекліст для REST API. Введіть вимоги, отримайте таблиці й тест-кейси, експортуйте в Google Таблиці чи Excel.',how:'Як користуватись',foot:'Усе працює у вашому браузері. Дані нікуди не надсилаються.',
+t_dt:'Таблиця рішень',t_pw:'Pairwise',t_st:'Стани й переходи',t_ep:'Класи еквівалентності',t_bv:'Граничні значення',t_api:'Перевірки API',
+l_cond:'Умови (так/ні)',l_act:'Результати',l_par:'Параметри',l_tr:'Переходи',l_field:'Назва поля',l_min:'Мінімум',l_max:'Максимум',l_int:'Лише цілі числа',l_step:'Крок',l_meth2:'Значень на межу',l_meth:'Метод',l_path:'Шлях (із query, якщо є)',l_auth:'Потрібна автентифікація',l_f:'Є фільтри',l_g:'Є пагінація',l_own:'Дані належать користувачу (перевірка власника)',
+c_cond:'Умова, напр. Є дорослий',c_act:'Результат, напр. Діє знижка',c_par:'Параметр',c_vals:'Значення через кому',c_from:'З якого стану',c_ev:'Подія',c_to:'У який стан',add:'+ Додати рядок',
+how_dt:'<ol><li>Випишіть <b>умови</b>, що впливають на результат. Кожна це так чи ні.</li><li>Випишіть <b>результати</b>, які перевіряєте, напр. «Діє знижка».</li><li>Таблиця покаже всі комбінації (Т = так, Н = ні). Кожна колонка це один тест-кейс.</li><li>Клацніть по клітинці результату, щоб поставити очікуване: ✔ відбувається, ✘ ні.</li></ol>',
+how_pw:'<ol><li>Один рядок на параметр: назва і значення через кому.</li><li>Отримаєте найменший набір тестів, де кожна пара значень із різних параметрів зустрічається хоча б раз.</li><li>Порівняйте кількість із повним перебором над таблицею.</li></ol>',
+how_st:'<ol><li>Кожен рядок це один перехід: <b>стан</b>, з якого виходимо, <b>подія</b> і <b>стан</b>, у який потрапляємо. Приклад: Чернетка, submit, Надіслано.</li><li>Стан із першого рядка вважається початковим (товсте коло).</li><li>Діаграма оновлюється сама. У таблиці ✘ означає, що подія в цьому стані неможлива: напишіть на неї негативний тест.</li></ol>',
+how_ep:'<ol><li>Введіть назву поля й допустимий діапазон.</li><li>Отримаєте класи: один валідний і кілька невалідних. Значення всередині одного класу мають поводитись однаково.</li><li>Тестуйте <b>по одному значенню від класу</b> замість сотень. Потім межі валідного класу перевірте на вкладці граничних значень.</li></ol>',
+how_bv:'<ol><li>Введіть допустимі мінімум і максимум та крок (1 для цілих, 0.01 для грошей).</li><li>Оберіть 2 або 3 значення на межу.</li><li>Перевірте кожне значення й порівняйте результат із колонкою «Очікується».</li></ol><p><b>Навіщо межі?</b> Перевірки діапазону часто помиляються на один символ. Правило: «вік від 18 до 65». Якщо в коді <code>age &gt; 18</code> замість <code>age &gt;= 18</code>, то 17 і 30 працюють правильно, і лише рівно 18 виявляє баг: його помилково відхиляють.</p>',
+how_api:'<ol><li>Оберіть метод і введіть шлях, напр. <b>/users/{id}/orders?status=paid</b>.</li><li>Позначте, що стосується: автентифікація, фільтри чи пагінація, дані користувача.</li><li>Отримаєте чекліст: статуси, заголовки, тіло, негативні та безпекові перевірки.</li></ol>',
+api_note:'Це еталонний чекліст. Джерело істини це ваша API-документація чи контракт: підлаштуйте коди й правила під неї.',
+T:'Т',F:'Н',ex_s:'Копіювати для Google Таблиць',ex_x:'Завантажити .xlsx',ex_m:'Копіювати Markdown',ok:'Скопійовано',fail:'Не вдалося скопіювати',
+e_dt:'Додайте хоча б одну умову',e_pw:'Додайте щонайменше два параметри зі значеннями',e_st:'Додайте хоча б один перехід',e_r:'Мінімум має бути не більшим за максимум',e_bv:'Перевірте мінімум, максимум і крок',
+dt_m:(n,N)=>`${n} умов → 2ⁿ = ${N} правил`,pw_m:(k,f)=>`${k} тестів замість ${f} (повний перебір)`,st_m:(s,e,n)=>`${s} станів · ${e} переходів · ${n} негативних тестів (✘)`,ep_m:(n,k)=>`Поле «${n}»: ${k} класів, по тесту на клас`,bv_m:k=>`${k} тестових значень`,api_m:(n,r)=>`${n} перевірок для ${r}`,
+st_h:'Стан \\ Подія',cl:'Клас',cd:'Умова',exm:'Приклад',exp:'Очікується',val:'Валідний',inv:'Невалідний',pos:'Позиція',vl:'Значення',acc:'приймається',rej:'відхиляється',
+ep1:'порожнє',ep2:'не число',ep3:'дробове число',x1:'приймається',x2:'помилка валідації',x3:'помилка: обов’язкове поле',x4:'помилка формату',x5:'помилка, не 500',x6:'помилка або задокументоване округлення',emp:'(порожньо)',
+p1:'мін − крок',p2:'мін',p3:'мін + крок',p4:'макс − крок',p5:'макс',p6:'макс + крок',
+a_g:'Група',a_c:'Перевірка',a_e:'Очікується (еталон)',a_h:'Як перевірити',why:'Що перевіряє',bug:'Яку помилку ловить',ep4:'самі пробіли',ep5:'величезне число',ep6:'спецсимволи, ін’єкція',w1:'Типовий випадок: звичайне допустиме значення працює.',w2:'Усе нижче діапазону відхиляється, а не приймається мовчки.',w3:'Усе вище діапазону відхиляється.',w4:'Відсутній ввід оброблено й не сприймається як 0.',w5:'Неправильний тип не валить сервер (400, не 500).',w6:'null від клієнта обробляється як відсутній чи невалідний ввід.',w7:'Поле лише для цілих не має мовчки обрізати 42.5 до 42.',w8:'Пробіли це не значення: їх обрізають і вважають порожнім.',w9:'Переповнення: дуже великі числа не обертаються й не валять систему.',w10:'Текст, емодзі й рядки-ін’єкції відхиляються безпечно: без 500 і стек-трейсу.',b1:'Занадто широкий діапазон: значення нижче мінімуму проходить',b2:'Неправильний оператор на нижній межі: «>» замість «>=»',b3:'Перевірка здорового глузду: перше значення всередині діапазону працює',b4:'Перевірка здорового глузду: останнє значення всередині діапазону працює',b5:'Неправильний оператор на верхній межі: «<» замість «<=»',b6:'Занадто широкий діапазон: значення вище максимуму приймається',a_d:'Готово',
+g_st:'Статуси',g_hd:'Заголовки',g_bd:'Тіло та валідація',g_ng:'Негативні',g_au:'Авторизація й безпека',g_ac:'Після виклику',g_pg:'Фільтри й пагінація',g_id:'Ідемпотентність'}};
+const t=(k,...a)=>{const v=T[lang][k];return typeof v==='function'?v(...a):(v===undefined?k:v)};
+
+const D={
+ dtc:{en:[['3+ people'],['Has a child under 14'],['Has an adult'],['Before 16:59']],uk:[['≥ 3 особи'],['Є дитина до 14'],['Є дорослий'],['Час до 16:59']]},
+ dta:{en:[['Family package €5.50']],uk:[['Сімейний пакет 5,50 €']]},
+ pw:{en:[['Browser','Chrome, Firefox, Safari'],['OS','Windows, macOS, Android'],['Language','UK, EN'],['Payment','Card, Apple Pay']],uk:[['Браузер','Chrome, Firefox, Safari'],['ОС','Windows, macOS, Android'],['Мова','UK, EN'],['Оплата','Картка, Apple Pay']]},
+ st:{en:[['Draft','submit','Submitted'],['Submitted','approve','Approved'],['Submitted','reject','Rejected'],['Rejected','edit','Draft'],['Approved','close','Closed']],uk:[['Чернетка','submit','Надіслано'],['Надіслано','approve','Схвалено'],['Надіслано','reject','Відхилено'],['Відхилено','edit','Чернетка'],['Схвалено','close','Закрито']]}};
+function Editor(id,cols,onch){
+ const el=$('#'+id);let rows=[];
+ function draw(){el.innerHTML=rows.map((r,i)=>'<div class="er">'+cols.map((c,j)=>`<input data-i="${i}" data-j="${j}" placeholder="${esc(t(c))}" aria-label="${esc(t(c))}" value="${esc(r[j]||'')}">`).join('')+`<button class="x" data-d="${i}" aria-label="×">×</button></div>`).join('')+`<button class="add" type="button">${esc(t('add'))}</button>`}
+ el.addEventListener('input',e=>{const i=e.target.dataset.i;if(i!==undefined){rows[i][e.target.dataset.j]=e.target.value;onch()}});
+ el.addEventListener('click',e=>{const b=e.target;if(b.dataset.d!==undefined){rows.splice(+b.dataset.d,1);draw();onch()}else if(b.classList.contains('add')){rows.push(cols.map(()=>''));draw();onch();const ins=el.querySelectorAll('.er');ins[ins.length-1].querySelector('input').focus()}});
+ return{set(r){rows=r.map(x=>[...x]);draw()},get:()=>rows.filter(r=>r.some(v=>(v||'').trim())).map(r=>r.map(v=>(v||'').trim())),json:()=>JSON.stringify(rows),draw}}
+const ed={dtc:Editor('dtc',['c_cond'],()=>dt()),dta:Editor('dta',['c_act'],()=>dt()),pw:Editor('pwe',['c_par','c_vals'],()=>pw()),st:Editor('ste',['c_from','c_ev','c_to'],()=>st())};
+const eds=[['dtc','dtc'],['dta','dta'],['pw','pw'],['st','st']];
+const fld={'ep-n':{en:'Age',uk:'Вік'}};
+
+const tabs=['dt','pw','st','ep','bv','api'];
+tabs.forEach(id=>{const b=document.createElement('button');b.setAttribute('role','tab');b.dataset.t=id;b.onclick=()=>show(id);$('#tabs').append(b)});
+function show(id){tabs.forEach(k=>$('#'+k).classList.toggle('on',k===id));$$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===id));history.replaceState(null,'','#'+id)}
+function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1400)}
+
+function dt(){
+ const c=ed.dtc.get().map(r=>r[0]).slice(0,6),a=ed.dta.get().map(r=>r[0]),n=c.length,N=1<<n;
+ if(!n){$('#dt-o').innerHTML='';$('#dt-m').textContent=t('e_dt');return}
+ $('#dt-m').textContent=t('dt_m',n,N);
+ let h='<table><thead><tr><th></th>';for(let k=0;k<N;k++)h+=`<th>R${k+1}</th>`;h+='</tr></thead><tbody>';
+ c.forEach((x,i)=>{h+=`<tr><th>${esc(x)}</th>`;for(let k=0;k<N;k++){const f=(k>>(n-1-i))&1;h+=`<td class="c ${f?'f':'t'}">${f?t('F'):t('T')}</td>`}h+='</tr>'});
+ a.forEach(x=>{h+=`<tr><th>${esc(x)}</th>`;for(let k=0;k<N;k++)h+='<td class="tog" tabindex="0"></td>';h+='</tr>'});
+ $('#dt-o').innerHTML=h+'</tbody></table>';
+}
+$('#dt-o').addEventListener('click',e=>{const c=e.target.closest('.tog');if(c){const s=['','✔','✘'];c.textContent=s[(s.indexOf(c.textContent)+1)%3]}});
+$('#dt-o').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.target.click()}});
+
+function pairwise(P){
+ const n=P.length,K=(m,x,k,y)=>m<k?`${m}.${x}|${k}.${y}`:`${k}.${y}|${m}.${x}`,U=new Set(),T=[];
+ for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)P[i].forEach((_,a)=>P[j].forEach((_,b)=>U.add(K(i,a,j,b))));
+ while(U.size){
+  const [x,y]=U.values().next().value.split('|'),[i,a]=x.split('.').map(Number),[j,b]=y.split('.').map(Number),r=Array(n).fill(null);r[i]=a;r[j]=b;
+  for(let k=0;k<n;k++){if(r[k]!==null)continue;let best=0,bs=-1;P[k].forEach((_,v)=>{let s=0;for(let m=0;m<n;m++)if(r[m]!==null&&U.has(K(m,r[m],k,v)))s++;if(s>bs){bs=s;best=v}});r[k]=best}
+  for(let p=0;p<n;p++)for(let q=p+1;q<n;q++)U.delete(K(p,r[p],q,r[q]));
+  T.push(r);
+ }
+ return T;
+}
+function pw(){
+ const P=ed.pw.get().map(r=>({n:r[0],v:L(r[1]||'',/,/)})).filter(p=>p.n&&p.v.length);
+ if(P.length<2){$('#pw-o').innerHTML='';$('#pw-m').textContent=t('e_pw');return}
+ const T=pairwise(P.map(p=>p.v)),full=P.reduce((s,p)=>s*p.v.length,1);
+ $('#pw-m').textContent=t('pw_m',T.length,full);
+ $('#pw-o').innerHTML='<table><thead><tr><th>#</th>'+P.map(p=>`<th>${esc(p.n)}</th>`).join('')+'</tr></thead><tbody>'+T.map((r,i)=>`<tr><td>${i+1}</td>`+r.map((v,k)=>`<td>${esc(P[k].v[v])}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
+}
+
+function st(){
+ const E=ed.st.get().map(r=>({f:r[0],e:r[1],t:r[2]})).filter(e=>e.f&&e.t);
+ const S=[...new Set(E.flatMap(e=>[e.f,e.t]))];
+ if(!S.length){$('#st-g').innerHTML='';$('#st-o').innerHTML='';$('#st-m').textContent=t('e_st');return}
+ const W=600,H=440,cx=W/2,cy=H/2,R=S.length<2?0:Math.min(150,60+S.length*22),r=34,P={},U={};
+ S.forEach((s,i)=>{const a=-Math.PI/2+2*Math.PI*i/S.length;P[s]=[cx+R*Math.cos(a),cy+R*Math.sin(a)];U[s]=S.length<2?[0,-1]:[Math.cos(a),Math.sin(a)]});
+ const sh=s=>s.length>10?s.slice(0,9)+'…':s;
+ let g=`<svg viewBox="0 0 ${W} ${H}" role="img"><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>`;
+ E.forEach(e=>{
+  const [ax,ay]=P[e.f],[bx,by]=P[e.t];let d,lx,ly;
+  if(e.f===e.t){const [ux,uy]=U[e.f],px=-uy,py=ux,q=(k,o)=>[ax+ux*k+px*o,ay+uy*k+py*o];d=`M${q(r*.85,-14)} C${q(r+55,-34)} ${q(r+55,34)} ${q(r+3,14)}`;[lx,ly]=q(r+46,0)}
+  else{const dx=bx-ax,dy=by-ay,len=Math.hypot(dx,dy),mx=(ax+bx)/2-dy/len*30,my=(ay+by)/2+dx/len*30,v1=Math.hypot(mx-ax,my-ay),v2=Math.hypot(mx-bx,my-by),s=[ax+(mx-ax)/v1*r,ay+(my-ay)/v1*r],en=[bx+(mx-bx)/v2*(r+4),by+(my-by)/v2*(r+4)];
+   d=`M${s} Q${mx},${my} ${en}`;lx=.25*s[0]+.5*mx+.25*en[0];ly=.25*s[1]+.5*my+.25*en[1]}
+  g+=`<path class="e" d="${d}" marker-end="url(#ah)"/><text class="l" x="${lx}" y="${ly-4}">${esc(e.e)}</text>`});
+ S.forEach((s,i)=>{const [x,y]=P[s];g+=`<g><title>${esc(s)}</title><circle class="n${i?'':' s'}" cx="${x}" cy="${y}" r="${r}"/><text x="${x}" y="${y+4}">${esc(sh(s))}</text></g>`});
+ $('#st-g').innerHTML=g+'</svg>';
+ const V=[...new Set(E.map(e=>e.e||'—'))];let neg=0;
+ let h=`<table><thead><tr><th>${esc(t('st_h'))}</th>`+V.map(v=>`<th>${esc(v)}</th>`).join('')+'</tr></thead><tbody>';
+ S.forEach(s=>{h+=`<tr><th>${esc(s)}</th>`+V.map(v=>{const nx=E.filter(e=>e.f===s&&(e.e||'—')===v).map(e=>e.t);if(!nx.length){neg++;return'<td class="c i">✘</td>'}return`<td class="v">${esc(nx.join(', '))}</td>`}).join('')+'</tr>'});
+ $('#st-o').innerHTML=h+'</tbody></table>';
+ $('#st-m').textContent=t('st_m',S.length,E.length,neg);
+}
+
+function ep(){
+ const mn=+$('#ep-min').value,mx=+$('#ep-max').value,nm=$('#ep-n').value||'—',int=$('#ep-int').checked;
+ if($('#ep-min').value===''||$('#ep-max').value===''||mn>mx){$('#ep-m').textContent=t('e_r');$('#ep-o').innerHTML='';return}
+ const s=int?1:.01,mid=num(int?Math.round((mn+mx)/2):(mn+mx)/2),V=true,I=false;
+ const R=[[V,`${mn} ≤ x ≤ ${mx}`,mid,'x1','w1'],[I,`x < ${mn}`,num(mn-s),'x2','w2'],[I,`x > ${mx}`,num(mx+s),'x2','w3'],[I,t('ep1'),t('emp'),'x3','w4'],[I,t('ep4'),'"   "','x3','w8'],[I,t('ep2'),'abc','x4','w5'],[I,'null','null','x5','w6'],[I,t('ep5'),'99999999999999999999','x2','w9'],[I,t('ep6'),"' OR 1=1 --",'x4','w10']];
+ if(int)R.push([I,t('ep3'),num(mid+.5),'x6','w7']);
+ $('#ep-m').textContent=t('ep_m',nm,R.length);
+ $('#ep-o').innerHTML=`<table><thead><tr><th>ID</th><th>${t('cl')}</th><th>${t('cd')}</th><th>${t('exm')}</th><th>${t('exp')}</th><th>${t('why')}</th></tr></thead><tbody>`+R.map((r,i)=>`<tr><td>EC${i+1}</td><td class="${r[0]?'v':'i'}">${r[0]?t('val'):t('inv')}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(t(r[3]))}</td><td style="white-space:normal;min-width:240px">${esc(t(r[4]))}</td></tr>`).join('')+'</tbody></table>';
+}
+function bv(){
+ const mn=+$('#bv-min').value,mx=+$('#bv-max').value,s=+$('#bv-s').value,k=$('#bv-k').value;
+ if($('#bv-min').value===''||$('#bv-max').value===''||mn>mx||!(s>0)){$('#bv-m').textContent=t('e_bv');$('#bv-o').innerHTML='';$('#bv-l').innerHTML='';return}
+ let R=[['p1',mn-s],['p2',mn]];if(k=='3')R.push(['p3',mn+s],['p4',mx-s]);R.push(['p5',mx],['p6',mx+s]);
+ R=R.map(([n,v])=>[n,num(v),v>=mn&&v<=mx]);
+ $('#bv-m').textContent=t('bv_m',R.length);
+ const gap=k=='3'?'p4':'p5';
+ $('#bv-l').innerHTML=R.map(r=>(r[0]===gap?'<span aria-hidden="true">…</span>':'')+`<span class="chip ${r[2]?'v':'i'}" title="${esc(t(r[0]))}">${r[1]}</span>`).join('');
+ $('#bv-o').innerHTML=`<table><thead><tr><th>${t('pos')}</th><th>${t('vl')}</th><th>${t('exp')}</th><th>${t('bug')}</th></tr></thead><tbody>`+R.map(r=>`<tr><td>${t(r[0])}</td><td>${r[1]}</td><td class="${r[2]?'v':'i'}">${r[2]?t('acc'):t('rej')}</td><td style="white-space:normal;min-width:260px">${esc(t('b'+r[0].slice(1)))}</td></tr>`).join('')+'</tbody></table>';
+}
+
+const C=[
+['coll','g_st','Existing {r} collection||200 and a JSON array of {r}||Create 2-3 {r} first, send the request, compare every field with the schema from the docs.','Існуюча колекція {r}||200 і JSON-масив {r}||Спершу створіть 2-3 {r}, надішліть запит, звірте кожне поле зі схемою з документації.'],
+['coll','g_st','Empty {r} collection||200 and [] (not 404)||Use a user who has no {r}. The collection exists, it is just empty.','Порожня колекція {r}||200 і [] (не 404)||Візьміть користувача без {r}. Колекція існує, вона просто порожня.'],
+['flt','g_pg','Filter by {f}, valid value||Only matching {r} returned||Create {r} with different values, filter by one, check that nothing extra is returned and nothing is missing.','Фільтр за {f}, валідне значення||Повертаються лише відповідні {r}||Створіть {r} з різними значеннями, відфільтруйте за одним і перевірте, що зайвого немає й нічого не загубилось.'],
+['flt','g_pg','Filter by {f}, invalid value or unknown parameter||400, or ignored, per docs||Try an invalid value (abc), an empty value and ?unknown=1. The contract says: reject or ignore.','Фільтр за {f}, невалідне значення або невідомий параметр||400 або ігнорується за документацією||Спробуйте невалідне значення (abc), порожнє та ?unknown=1. Контракт каже: відхиляти чи ігнорувати.'],
+['flt','g_pg','Several filters together||Results satisfy all filters (AND)||Combine the filters ({f}) in one request and check each result matches every one.','Кілька фільтрів разом||Результати задовольняють усі фільтри (І)||Поєднайте фільтри ({f}) в одному запиті й перевірте, що кожен результат підходить під усі.'],
+['pgn','g_pg','Pagination {p}: default and maximum||Default size applies; above the max gives 400 or is capped||Send no {p}, then a huge value. See what the docs promise: error or cap.','Пагінація {p}: за замовчуванням і максимум||Діє розмір за замовчуванням; більше за максимум дає 400 або обрізається||Не передавайте {p}, потім передайте величезне значення. Звірте з документацією: помилка чи обмеження.'],
+['pgn','g_pg','{p} = 0, negative or not a number||400, not 500||Send 0, -1 and abc.','{p} = 0, від’ємне або не число||400, не 500||Надішліть 0, -1 і abc.'],
+['pgn','g_pg','Page past the end||200 and []||Request a page far beyond the data.','Сторінка за межами даних||200 і []||Запросіть сторінку далеко за межами даних.'],
+['pgn','g_pg','Order and totals across pages||No duplicates or gaps; total / next are correct||Walk through all pages, collect the ids and compare with the full count.','Порядок і підсумки між сторінками||Без дублів і пропусків; total / next коректні||Пройдіть усі сторінки, зберіть id й порівняйте з повною кількістю.'],
+['itm','g_st','Existing {r} id||200, fields match the schema||Take a real id from the list and request it.','Існуючий id {r}||200, поля відповідають схемі||Візьміть реальний id зі списку й запросіть його.'],
+['itm','g_ng','Non-existent {r} id||404, error names the resource||Use a well-formed id that does not exist, e.g. 999999.','Неіснуючий id {r}||404, у помилці вказано ресурс||Використайте коректний за форматом id, якого немає, напр. 999999.'],
+['itm','g_ng','Malformed id (abc, -1, huge number)||400, not 500||Put text, a negative number and a 30-digit number in place of {id}.','Некоректний id (abc, -1, величезне число)||400, не 500||Підставте замість {id} текст, від’ємне число та число з 30 цифр.'],
+['nest','g_ng','Parent {pr} does not exist||404, and the message says it is the {pr}||Call the path with a missing {pid}, then a missing {r} under a real {pr}. Both give 404, but the errors must be distinguishable.','Батьківський ресурс {pr} не існує||404, і в повідомленні видно, що це {pr}||Викличте шлях із неіснуючим {pid}, потім із неіснуючим {r} під справжнім {pr}. Обидва дають 404, але помилки мають відрізнятись.'],
+['nest','g_au','{r} belongs to a different {pr}||403 or 404, never the data||Take a {r} id of {pr} A and request it under {pr} B.','{r} належить іншому {pr}||403 або 404, але не дані||Візьміть id {r} з {pr} A і запросіть його під {pr} B.'],
+['ver','g_ng','Wrong or missing API version in the path||404 or a clear version error||Change v1 to v99 and then remove it. Old versions must behave as documented.','Неправильна або відсутня версія API в шляху||404 або зрозуміла помилка версії||Змініть v1 на v99, потім приберіть її. Старі версії мають поводитись за документацією.'],
+['post','g_st','Valid body||201, id in body, Location header||Send a minimal valid body, then a full one. Check status, body and headers.','Валідне тіло||201, id у тілі, заголовок Location||Надішліть мінімальне валідне тіло, потім повне. Перевірте статус, тіло й заголовки.'],
+['post','g_id','Same request sent twice||Duplicate or 409 per docs; with Idempotency-Key only one {r}||Imitate a double click or a retry after a timeout. In payments a double charge is a critical bug.','Той самий запит двічі||Дублікат або 409 за документацією; з Idempotency-Key лише один {r}||Змоделюйте подвійний клік чи повтор після таймауту. У платежах подвійне списання це критичний баг.'],
+['put','g_st','Full replace||200 or 204, resource equals the sent body||Send a complete body, then GET and compare.','Повна заміна||200 або 204, ресурс дорівнює надісланому тілу||Надішліть повне тіло, потім зробіть GET і порівняйте.'],
+['put','g_id','Repeat the same PUT||Same result, no side effects||Send the same PUT twice and compare the state after each.','Повторний PUT||Той самий результат без побічних ефектів||Надішліть той самий PUT двічі й порівняйте стан після кожного.'],
+['patch','g_st','Change one field||200, only that field changes||Send one field, then GET and check the other fields are unchanged.','Зміна одного поля||200, змінюється лише це поле||Надішліть одне поле, зробіть GET і перевірте, що решта полів не змінилась.'],
+['patch','g_bd','Field absent vs null vs ""||Absent: unchanged; null: cleared (if documented); "": per docs||Send {}, then {"field":null}, then {"field":""}. Do a GET after each.','Поле відсутнє / null / ""||Відсутнє: без змін; null: очищує (якщо в доках); "": за документацією||Надішліть {}, потім {"field":null}, потім {"field":""}. Після кожного робіть GET.'],
+['del','g_st','Delete an existing {r}||204 or 200||Delete it, then GET the same id: expect 404.','Видалення існуючого {r}||204 або 200||Видаліть, потім зробіть GET того самого id: очікуйте 404.'],
+['del','g_id','Delete twice||404 or 204 per docs, never 500||Repeat the same DELETE.','Повторне видалення||404 або 204 за документацією, не 500||Повторіть той самий DELETE.'],
+['wr','g_ac','GET after the change||The change is really saved, not only 2xx||Always read the state back with a second request. A 200 alone proves little.','GET після зміни||Зміну справді збережено, а не лише 2xx||Завжди перечитуйте стан другим запитом. Самого 200 замало.'],
+['body','g_bd','Required field missing||400 or 422 naming the field||Remove each required field one at a time.','Відсутнє обов’язкове поле||400 або 422 з назвою поля||Прибирайте кожне обов’язкове поле по черзі.'],
+['body','g_bd','Wrong types, null, "", spaces only||400 or 422, never 500||Send a number instead of a string, null, an empty string and "   ".','Неправильні типи, null, "", самі пробіли||400 або 422, ніколи не 500||Надішліть число замість рядка, null, порожній рядок і "   ".'],
+['body','g_bd','Length and value boundaries||Edges accepted, outside rejected||Use min, max, min-1 and max+1 from the Boundary values tab.','Межі довжини та значень||Межі приймаються, поза межами відмова||Візьміть мін, макс, мін-1 і макс+1 із вкладки граничних значень.'],
+['body','g_bd','Money and big numbers||Integer minor units or decimal string; no float rounding||Send amounts like 0.1 and 10.505, and ids above 2^53.','Гроші та великі числа||Ціле в мінімальних одиницях або рядок; без float-округлень||Надішліть суми на кшталт 0.1 і 10.505 та id більші за 2^53.'],
+['body','g_bd','Extra unknown fields (role, id)||Ignored or 400 per docs; no mass assignment||Add "role":"admin" or "id":1 and check that it was not applied.','Зайві невідомі поля (role, id)||Ігноруються або 400 за документацією; без mass assignment||Додайте "role":"admin" або "id":1 і перевірте, що вони не застосувались.'],
+['body','g_ng','Broken JSON, empty body||400||Send a truncated JSON, an empty body and plain text.','Битий JSON, порожнє тіло||400||Надішліть обірваний JSON, порожнє тіло й просто текст.'],
+['body','g_ng','Wrong Content-Type||415||Send JSON with text/plain, and with no Content-Type.','Неправильний Content-Type||415||Надішліть JSON з text/plain і без Content-Type.'],
+['all','g_hd','Content-Type on success and on errors||application/json everywhere||Check the headers of 2xx, 4xx and 5xx. An HTML error page means the gateway answered, not the API.','Content-Type в успішних і помилкових відповідях||application/json скрізь||Перевірте заголовки 2xx, 4xx і 5xx. HTML-сторінка помилки означає, що відповів шлюз, а не API.'],
+['post','g_hd','Location on creation||URL of the new {r}, and it opens||Follow the Location header with a GET.','Location при створенні||URL нового {r}, і він відкривається||Перейдіть за заголовком Location через GET.'],
+['all','g_hd','X-Request-Id or traceparent||In every response, including 4xx and 5xx||You need it to find the request in the logs when filing a bug.','X-Request-Id або traceparent||У кожній відповіді, зокрема 4xx і 5xx||Він потрібен, щоб знайти запит у логах у баг-репорті.'],
+['get','g_hd','Cache headers (ETag, Cache-Control)||As documented; 304 on matching ETag||Repeat the GET with If-None-Match.','Заголовки кешу (ETag, Cache-Control)||Як у документації; 304 при збігу ETag||Повторіть GET з If-None-Match.'],
+['all','g_ng','Unsupported method||405 with Allow header||Send a method the path does not support, e.g. PUT to a read-only path.','Непідтримуваний метод||405 із заголовком Allow||Надішліть метод, якого шлях не підтримує, напр. PUT на шлях лише для читання.'],
+['all','g_ng','Accept with unsupported type||406||Send Accept: application/xml.','Accept із непідтримуваним типом||406||Надішліть Accept: application/xml.'],
+['all','g_ng','Error format||One structure (code, message), no stack trace or internals||Compare the error bodies of several different failures.','Формат помилки||Єдина структура (code, message), без стек-трейсу й внутрішніх деталей||Порівняйте тіла помилок кількох різних збоїв.'],
+['auth','g_au','No token, invalid, expired||401||Remove the token, change one character, use an expired one.','Без токена, недійсний, прострочений||401||Приберіть токен, змініть один символ, візьміть прострочений.'],
+['auth','g_au','Valid token without permission (other role)||403||Use a user with a lower role.','Валідний токен без прав (інша роль)||403||Скористайтесь користувачем із нижчою роллю.'],
+['own','g_au','{r} of another user (IDOR / BOLA)||403 or 404, no foreign data||Log in as user A and request an id owned by user B.','{r} іншого користувача (IDOR / BOLA)||403 або 404, жодних чужих даних||Увійдіть як користувач A і запросіть id, що належить користувачу B.'],
+['auth','g_au','Where the token travels||Authorization header only, never the URL||Check that ?token= is not accepted and does not appear in logs.','Де передається токен||Лише заголовок Authorization, не URL||Перевірте, що ?token= не приймається й не потрапляє в логи.'],
+['all','g_ng','Invalid input and latency||No 5xx on invalid input; reasonable response time||Review the runs above: any 5xx on bad input is a bug.','Невалідний ввід і час відповіді||Жодних 5xx на невалідний ввід; прийнятний час||Перегляньте прогони вище: будь-який 5xx на поганий ввід це баг.']];
+function api(sync){
+ const m=$('#a-m').value,p=$('#a-p').value.trim()||'/',[pa,qs='']=p.split('?'),segs=pa.split('/').filter(Boolean),isP=s=>/^(\{.*\}|:.+|\d+|<.+>)$/.test(s);
+ const names=L(qs,/&/).map(x=>x.split('=')[0]).filter(Boolean),PG=/^(limit|page|offset|cursor|per_?page|page_?size|size|skip|take)$/i,SO=/^(sort|order|sort_?by|order_?by)$/i;
+ const pg=names.filter(n=>PG.test(n)),fl=names.filter(n=>!PG.test(n)&&!SO.test(n));
+ const prm=segs.filter(isP),np=segs.filter(s=>!isP(s)&&!/^v\d+$/i.test(s)),g=m==='GET',itm=isP(segs[segs.length-1]||''),can=g&&!itm;
+ const nest=segs.some((s,i)=>isP(s)&&i<segs.length-1),ver=segs.some(s=>/^v\d+$/i.test(s));
+ if(sync){$('#a-f').checked=fl.length>0;$('#a-g').checked=pg.length>0}
+ $('#a-f').disabled=$('#a-g').disabled=!can;
+ const V={r:np[np.length-1]||(lang==='uk'?'ресурс':'resource'),f:fl.join(', ')||(lang==='uk'?'фільтр':'filter'),p:pg.join(', ')||'limit',id:prm[prm.length-1]||'id',pid:prm[0]||'id',pr:np[0]||''};
+ const F={all:1,get:g,post:m==='POST',put:m==='PUT',patch:m==='PATCH',del:m==='DELETE',coll:g&&!itm,itm:g&&itm,body:['POST','PUT','PATCH'].includes(m),wr:!g,auth:$('#a-a').checked,flt:can&&$('#a-f').checked,pgn:can&&$('#a-g').checked,own:$('#a-o').checked,nest,ver};
+ const sub=s=>s.replace(/\{(r|f|p|id|pid|pr)\}/g,(_,k)=>V[k]);
+ const rows=C.filter(c=>F[c[0]]);
+ $('#api-m').textContent=t('api_m',rows.length,m+' '+p);
+ $('#api-o').innerHTML=`<table><thead><tr><th>${t('a_g')}</th><th>${t('a_c')}</th><th>${t('a_e')}</th><th>${t('a_h')}</th><th>${t('a_d')}</th></tr></thead><tbody>`+rows.map(c=>{const [a,b,h]=sub(c[lang==='uk'?3:2]).split('||');return`<tr><td>${esc(t(c[1]))}</td><td>${esc(a)}</td><td>${esc(b)}</td><td style="min-width:220px">${esc(h)}</td><td class="c"><input type="checkbox" style="width:auto" aria-label="${esc(t('a_d'))}"></td></tr>`}).join('')+'</tbody></table>';
+}
+
+function rowsOf(id){return[...$('#'+id+' table').rows].map(r=>[...r.cells].map(c=>c.textContent.replace(/\s+/g,' ').trim()))}
+function copy(s){(navigator.clipboard?navigator.clipboard.writeText(s):Promise.reject()).then(()=>toast(t('ok')),()=>toast(t('fail')))}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('.ex button');if(!b||!$('#'+b.parentNode.dataset.for+' table'))return;
+ const id=b.parentNode.dataset.for,R=rowsOf(id),a=b.dataset.a;
+ if(a==='s')copy(R.map(r=>r.join('\t')).join('\n'));
+ else if(a==='m'){const ln=r=>'| '+r.map(c=>(c||' ').replace(/\|/g,'/')).join(' | ')+' |';copy([ln(R[0]),ln(R[0].map(()=>'---')),...R.slice(1).map(ln)].join('\n'))}
+ else if(window.XLSX){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(R),'QA');XLSX.writeFile(wb,'qa-'+id.slice(0,2)+'.xlsx')}
+ else{const u=URL.createObjectURL(new Blob(['\ufeff'+R.map(r=>r.map(c=>'"'+c.replace(/"/g,'""')+'"').join(',')).join('\n')],{type:'text/csv'})),l=document.createElement('a');l.href=u;l.download='qa-'+id.slice(0,2)+'.csv';l.click()}
+});
+
+function applyTheme(th){document.documentElement.dataset.theme=th;$('#th').textContent=th==='dark'?'☀':'☾';$('#th').setAttribute('aria-label',th==='dark'?'Light theme':'Dark theme');store.set('qa-theme',th)}
+$('#th').onclick=()=>applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+applyTheme(store.get('qa-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));
+
+function setLang(l){
+ const old=lang;
+ eds.forEach(([k,d])=>{if(ed[k].json()===JSON.stringify(D[d][old]))ed[k].set(D[d][l])});
+ Object.keys(fld).forEach(k=>{if($('#'+k).value===fld[k][old])$('#'+k).value=fld[k][l]});
+ lang=l;store.set('qa-lang',l);render();
+}
+function render(){
+ document.documentElement.lang=lang;document.title=t('title');
+ $$('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));
+ $$('[data-h]').forEach(e=>e.innerHTML=t(e.dataset.h));
+ $$('#tabs button').forEach(b=>b.textContent=t('t_'+b.dataset.t));
+ $$('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===lang));
+ $$('.ex').forEach(x=>x.innerHTML=['s','x','m'].map(a=>`<button type="button" data-a="${a}">${esc(t('ex_'+a))}</button>`).join(''));
+ Object.values(ed).forEach(e=>e.draw());
+ dt();pw();st();ep();bv();api();
+}
+$$('.seg button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+['ep-n','ep-min','ep-max','ep-int'].forEach(i=>$('#'+i).addEventListener('input',ep));
+['bv-min','bv-max','bv-s','bv-k'].forEach(i=>$('#'+i).addEventListener('input',bv));
+['a-m','a-a','a-f','a-g','a-o'].forEach(i=>$('#'+i).addEventListener('input',()=>api()));
+$('#a-p').addEventListener('input',()=>api(true));
+eds.forEach(([k,d])=>ed[k].set(D[d][lang]));
+$('#ep-n').value=fld['ep-n'][lang];
+api(true);render();
+const h=location.hash.slice(1);show(tabs.includes(h)?h:'dt');
+</script>
+</body>
+</html>
